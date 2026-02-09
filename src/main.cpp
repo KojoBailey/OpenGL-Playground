@@ -1,5 +1,4 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "window.hpp"
 
 #include <iostream>
 
@@ -22,21 +21,20 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL Project", NULL, NULL);
-	if (!window) {
-		std::cerr << "Failed to create GLFW window." << std::endl;
-		glfwTerminate();
+	auto window_buffer = gl::Window::create("OpenGL Test", 800, 600);
+	if (!window_buffer) {
+		std::cerr << window_buffer.error() << std::endl;
 		return -1;
-	}	
-	glfwMakeContextCurrent(window);
-
+	}
+	gl::Window window = *window_buffer;
+	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialise GLAD." << std::endl;
 		return -1;
 	}
 
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window.instance, framebuffer_size_callback);
 
 	// shader stuff
 	const char* vertexShaderSource = "#version 330 core\n"
@@ -97,9 +95,9 @@ int main()
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window.instance)) {
 		// input
-		processInput(window);
+		processInput(window.instance);
 
 		// rendering
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -112,7 +110,7 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// check/call events and swap buffers
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window.instance);
 		glfwPollEvents();
 	}
 
