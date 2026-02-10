@@ -39,7 +39,9 @@ public:
 		}
 
 		glViewport(0, 0, window.width, window.height);
-		glfwSetFramebufferSizeCallback(window.instance, framebuffer_size_callback);
+		glfwSetFramebufferSizeCallback(window.instance, [](GLFWwindow* _window, int _width, int _height) {
+			glViewport(0, 0, _width, _height);
+		});
 
 		return window;
 	}
@@ -53,13 +55,6 @@ public:
 	{
 		glfwSetWindowShouldClose(instance, true);
 	}
-
-private:
-	static void framebuffer_size_callback(GLFWwindow* window, int _width, int _height)
-	{
-		glViewport(0, 0, _width, _height);
-	}
-
 };
 
 }
